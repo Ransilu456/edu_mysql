@@ -1,0 +1,127 @@
+/* Central font loader - Self-hosted TTF fonts */
+
+/* Inter - Light (300) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - Light Italic (300) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter - Regular (400) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - Italic (400) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter - Medium (500) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - Medium Italic (500) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter - SemiBold (600) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - SemiBold Italic (600) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter - Bold (700) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - Bold Italic (700) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter - ExtraBold (800) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter - ExtraBold Italic (800) */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter_24pt-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Outfit - Bold (700) */
+@font-face {
+  font-family: 'Outfit';
+  src: url('../fonts/Outfit-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono - Regular (400) */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../fonts/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
