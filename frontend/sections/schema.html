@@ -1,0 +1,138 @@
+<section id="design-types" class="doc-section">
+<h2>Data Type Logic</h2>
+<p>Choosing the wrong data type wastes storage, kills index performance, and causes silent data corruption. Use this reference every time you design a column.</p>
+
+<h3>Numeric Types</h3>
+<table class="doc-table">
+  <thead><tr><th>Type</th><th>Storage</th><th>Range</th><th>Use When</th></tr></thead>
+  <tbody>
+    <tr><td><code>TINYINT</code></td><td>1 byte</td><td>-128 to 127</td><td>Status flags, booleans</td></tr>
+    <tr><td><code>SMALLINT</code></td><td>2 bytes</td><td>-32,768 to 32,767</td><td>Age, year fields</td></tr>
+    <tr><td><code>INT</code></td><td>4 bytes</td><td>±2.1 billion</td><td>IDs, counters</td></tr>
+    <tr><td><code>BIGINT</code></td><td>8 bytes</td><td>±9.2 quintillion</td><td>Large IDs, timestamps</td></tr>
+    <tr><td><code>DECIMAL(p,s)</code></td><td>Variable</td><td>Exact precision</td><td>Money — NEVER use FLOAT</td></tr>
+    <tr><td><code>FLOAT</code></td><td>4 bytes</td><td>Approximate</td><td>Scientific data only</td></tr>
+  </tbody>
+</table>
+
+<div class="lab-box"><span class="lab-tag error">Common Mistake</span>
+<div class="code-editor"><div class="editor-header">wrong.sql</div>
+<pre>price FLOAT  -- ❌ 0.1 + 0.2 = 0.30000000004</pre></div>
+<div class="code-editor"><div class="editor-header">correct.sql</div>
+<pre>price <span class="k">DECIMAL</span>(10,2)  -- ✅ Exact: 0.10 + 0.20 = 0.30</pre></div>
+</div>
+
+<h3>String Types</h3>
+<table class="doc-table">
+  <thead><tr><th>Type</th><th>Max Size</th><th>Storage</th><th>Use When</th></tr></thead>
+  <tbody>
+    <tr><td><code>CHAR(n)</code></td><td>255 chars</td><td>Fixed n bytes always</td><td>Fixed-length: country codes, hashes</td></tr>
+    <tr><td><code>VARCHAR(n)</code></td><td>65,535 chars</td><td>Actual length + 1-2 bytes</td><td>Variable text: names, emails</td></tr>
+    <tr><td><code>TEXT</code></td><td>65 KB</td><td>Off-row storage</td><td>Blog posts, descriptions</td></tr>
+    <tr><td><code>MEDIUMTEXT</code></td><td>16 MB</td><td>Off-row storage</td><td>HTML content, JSON docs</td></tr>
+    <tr><td><code>LONGTEXT</code></td><td>4 GB</td><td>Off-row storage</td><td>File contents, large blobs</td></tr>
+  </tbody>
+</table>
+
+<h3>Date & Time Types</h3>
+<table class="doc-table">
+  <thead><tr><th>Type</th><th>Format</th><th>Range</th><th>Timezone Aware</th></tr></thead>
+  <tbody>
+    <tr><td><code>DATE</code></td><td>YYYY-MM-DD</td><td>1000 to 9999</td><td>❌ No</td></tr>
+    <tr><td><code>DATETIME</code></td><td>YYYY-MM-DD HH:MM:SS</td><td>1000 to 9999</td><td>❌ No</td></tr>
+    <tr><td><code>TIMESTAMP</code></td><td>YYYY-MM-DD HH:MM:SS</td><td>1970 to 2038</td><td>✅ UTC stored</td></tr>
+    <tr><td><code>TIME</code></td><td>HH:MM:SS</td><td>-838 to 838 hours</td><td>❌ No</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">data_types_example.sql</div>
+<pre><span class="k">CREATE TABLE</span> products (
+  id        <span class="k">INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,
+  sku       <span class="k">CHAR</span>(10) <span class="k">NOT NULL</span>,
+  name      <span class="k">VARCHAR</span>(200) <span class="k">NOT NULL</span>,
+  price     <span class="k">DECIMAL</span>(10,2) <span class="k">NOT NULL</span>,
+  stock     <span class="k">SMALLINT UNSIGNED DEFAULT</span> 0,
+  active    <span class="k">TINYINT</span>(1) <span class="k">DEFAULT</span> 1,
+  created   <span class="k">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+);</pre></div>
+</section>
+
+<section id="design-ddl" class="doc-section">
+<h2>DDL Commands: Building Structure</h2>
+<p>DDL (Data Definition Language) commands define your schema. These do not modify data — they modify the <em>structure</em> that holds data.</p>
+
+<h3>CREATE TABLE — Full Syntax</h3>
+<div class="code-editor"><div class="editor-header">create_table.sql</div>
+<pre><span class="k">CREATE TABLE</span> users (
+  id         <span class="k">INT UNSIGNED AUTO_INCREMENT</span>,
+  username   <span class="k">VARCHAR</span>(50)  <span class="k">NOT NULL UNIQUE</span>,
+  email      <span class="k">VARCHAR</span>(255) <span class="k">NOT NULL UNIQUE</span>,
+  password   <span class="k">CHAR</span>(60)     <span class="k">NOT NULL</span>,
+  role       <span class="k">ENUM</span>('admin','user','guest') <span class="k">DEFAULT</span> 'user',
+  created_at <span class="k">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>,
+  updated_at <span class="k">TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</span>,
+  <span class="k">PRIMARY KEY</span> (id)
+) <span class="k">ENGINE</span>=InnoDB <span class="k">CHARSET</span>=utf8mb4;</pre></div>
+
+<h3>ALTER TABLE — Modify Existing Tables</h3>
+<div class="code-editor"><div class="editor-header">alter_table.sql</div>
+<pre><span class="k">ALTER TABLE</span> users <span class="k">ADD COLUMN</span> phone <span class="k">VARCHAR</span>(20) <span class="k">AFTER</span> email;
+<span class="k">ALTER TABLE</span> users <span class="k">MODIFY COLUMN</span> phone <span class="k">VARCHAR</span>(30) <span class="k">NOT NULL</span>;
+<span class="k">ALTER TABLE</span> users <span class="k">DROP COLUMN</span> phone;
+<span class="k">ALTER TABLE</span> users <span class="k">RENAME TO</span> members;
+<span class="k">ALTER TABLE</span> users <span class="k">ADD INDEX</span> idx_email (email);
+<span class="k">ALTER TABLE</span> users <span class="k">DROP INDEX</span> idx_email;</pre></div>
+
+<h3>All DDL Commands Reference</h3>
+<table class="doc-table">
+  <thead><tr><th>Command</th><th>Purpose</th><th>Reversible?</th></tr></thead>
+  <tbody>
+    <tr><td><code>CREATE TABLE</code></td><td>Create new table</td><td>✅ DROP TABLE</td></tr>
+    <tr><td><code>ALTER TABLE</code></td><td>Modify structure</td><td>⚠️ Partially</td></tr>
+    <tr><td><code>DROP TABLE</code></td><td>Delete table + data</td><td>❌ Permanent</td></tr>
+    <tr><td><code>TRUNCATE TABLE</code></td><td>Delete all rows, reset AUTO_INCREMENT</td><td>❌ Permanent</td></tr>
+    <tr><td><code>RENAME TABLE</code></td><td>Rename table</td><td>✅ Rename back</td></tr>
+    <tr><td><code>CREATE INDEX</code></td><td>Add index</td><td>✅ DROP INDEX</td></tr>
+    <tr><td><code>CREATE DATABASE</code></td><td>Create schema</td><td>✅ DROP DATABASE</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section id="design-constraints" class="doc-section">
+<h2>Keys &amp; Constraints</h2>
+<p>Constraints are rules enforced by the database engine at the storage level — not at the application level. They are your last line of defense against corrupt data.</p>
+
+<table class="doc-table">
+  <thead><tr><th>Constraint</th><th>What It Does</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td><code>PRIMARY KEY</code></td><td>Unique, non-null row identifier</td><td><code>id INT PRIMARY KEY</code></td></tr>
+    <tr><td><code>UNIQUE</code></td><td>No duplicate values allowed</td><td><code>email VARCHAR UNIQUE</code></td></tr>
+    <tr><td><code>NOT NULL</code></td><td>Column must always have a value</td><td><code>name VARCHAR NOT NULL</code></td></tr>
+    <tr><td><code>DEFAULT</code></td><td>Fallback value if none given</td><td><code>status DEFAULT 'active'</code></td></tr>
+    <tr><td><code>CHECK</code></td><td>Custom condition validation</td><td><code>CHECK (age >= 18)</code></td></tr>
+    <tr><td><code>FOREIGN KEY</code></td><td>Referential integrity between tables</td><td><code>REFERENCES users(id)</code></td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">foreign_key.sql</div>
+<pre><span class="k">CREATE TABLE</span> orders (
+  id         <span class="k">INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,
+  user_id    <span class="k">INT UNSIGNED NOT NULL</span>,
+  total      <span class="k">DECIMAL</span>(10,2) <span class="k">NOT NULL</span>,
+  status     <span class="k">ENUM</span>('pending','paid','cancelled') <span class="k">DEFAULT</span> 'pending',
+  <span class="k">CONSTRAINT</span> fk_order_user
+    <span class="k">FOREIGN KEY</span> (user_id) <span class="k">REFERENCES</span> users(id)
+    <span class="k">ON DELETE CASCADE ON UPDATE CASCADE</span>
+);</pre></div>
+
+<h3>Foreign Key Actions</h3>
+<table class="doc-table">
+  <thead><tr><th>Action</th><th>On Parent Delete</th><th>Use Case</th></tr></thead>
+  <tbody>
+    <tr><td><code>CASCADE</code></td><td>Auto-delete child rows</td><td>Comments when post is deleted</td></tr>
+    <tr><td><code>SET NULL</code></td><td>Set FK to NULL</td><td>Keep order history after user delete</td></tr>
+    <tr><td><code>RESTRICT</code></td><td>Block parent delete</td><td>Protect critical parent records</td></tr>
+    <tr><td><code>NO ACTION</code></td><td>Same as RESTRICT (deferred)</td><td>Default in some engines</td></tr>
+  </tbody>
+</table>
+</section>

@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MySQL Mastery | Full Course</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/course.css">
+</head>
+
+<body class="course-layout-v2">
+  <aside class="course-sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html"><span class="mysql-blue">MY</span><span class="mysql-orange">SQL</span></a>
+    </div>
+    <nav class="course-toc">
+      <div class="toc-group">
+        <span class="toc-title">0. START HERE</span>
+        <a href="#intro" class="toc-link active">Introduction</a>
+        <a href="#setup-xampp" class="toc-link">Install XAMPP</a>
+      </div>
+      <div class="toc-group">
+        <span class="toc-title">1. ARCHITECTURE</span>
+        <a href="#arch-internals" class="toc-link">Server Internals</a>
+        <a href="#arch-flow" class="toc-link">Query Life Cycle</a>
+        <a href="#arch-engines" class="toc-link">Storage Engines</a>
+      </div>
+      <div class="toc-group">
+        <span class="toc-title">2. SCHEMA DESIGN</span>
+        <a href="#design-types" class="toc-link">Data Type Logic</a>
+        <a href="#design-ddl" class="toc-link">DDL Commands</a>
+        <a href="#design-constraints" class="toc-link">Keys &amp; Constraints</a>
+      </div>
+      <div class="toc-group">
+        <span class="toc-title">3. NORMALIZATION</span>
+        <a href="#norm-concept" class="toc-link">Anomalies Lab</a>
+        <a href="#norm-1nf" class="toc-link">1st Normal Form</a>
+        <a href="#norm-2nf" class="toc-link">2nd Normal Form</a>
+        <a href="#norm-3nf" class="toc-link">3rd Normal Form</a>
+        <a href="#norm-bcnf" class="toc-link">BCNF</a>
+      </div>
+      <div class="toc-group">
+        <span class="toc-title">4. QUERY MASTERY</span>
+        <a href="#query-basics" class="toc-link">Select &amp; Filter</a>
+        <a href="#query-joins" class="toc-link">Joins Lab</a>
+        <a href="#query-agg" class="toc-link">Aggregation</a>
+        <a href="#query-sub" class="toc-link">Subqueries &amp; CTEs</a>
+      </div>
+      <div class="toc-group">
+        <span class="toc-title">5. PERFORMANCE</span>
+        <a href="#perf-indexing" class="toc-link">Indexing B-Tree</a>
+        <a href="#perf-explain" class="toc-link">EXPLAIN Command</a>
+        <a href="#perf-acid" class="toc-link">ACID &amp; Transactions</a>
+      </div>
+    </nav>
+  </aside>
+  <main class="course-main">
+    <header class="course-top-nav">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" width="20" height="20">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      <div class="breadcrumb">Course / <span id="current-module">Introduction</span></div>
+      <div style="display: flex; gap: 1.5rem; align-items: center;">
+        <a href="auth/login.html" class="back-home">Login</a>
+        <a href="index.html" class="back-home">Back to Home</a>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <section id="intro" class="doc-section">
+        <div class="section-badge">Getting Started</div>
+        <h1>Introduction to MySQL</h1>
+        <p class="section-intro">MySQL is the world's most widely used open-source relational database management
+          system. It powers Facebook, Twitter, YouTube, and millions of web applications. Before you write your first
+          query, you need to understand what MySQL is, how it works, and how to set it up.</p>
+
+        <h3>What is a Relational Database?</h3>
+        <p>A relational database stores data in structured <strong>tables</strong> &mdash; rows and columns. The
+          &ldquo;relational&rdquo; part means tables can be linked through shared keys, allowing you to store data
+          efficiently and query it with precision.</p>
+
+        <div class="info-box">
+          <strong>MySQL vs Other Databases:</strong> MySQL is one of many RDBMS options. PostgreSQL is more
+          feature-rich. SQLite is embedded and file-based. Oracle is enterprise-grade. MySQL sits in the sweet spot:
+          fast, free, widely supported, and battle-tested at massive scale.
+        </div>
+
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>MySQL</th>
+              <th>PostgreSQL</th>
+              <th>SQLite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>License</td>
+              <td>GPL / Commercial</td>
+              <td>Open Source</td>
+              <td>Public Domain</td>
+            </tr>
+            <tr>
+              <td>Transactions</td>
+              <td class="yes">Full ACID</td>
+              <td class="yes">Full ACID</td>
+              <td>Partial</td>
+            </tr>
+            <tr>
+              <td>Foreign Keys</td>
+              <td><span class="tag-yes">Yes</span></td>
+              <td><span class="tag-yes">Yes</span></td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td>Best For</td>
+              <td>Web apps, LAMP stack</td>
+              <td>Complex queries, JSON</td>
+              <td>Embedded, mobile apps</td>
+            </tr>
+            <tr>
+              <td>Horizontal Scaling</td>
+              <td>Replication, Cluster</td>
+              <td>Extensions</td>
+              <td><span class="tag-no">No</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="setup-xampp" class="doc-section">
+        <div class="section-badge">Environment Setup</div>
+        <h2>Installing XAMPP &amp; Setting Up Your Workspace</h2>
+        <p class="section-intro">XAMPP is the fastest way to get MySQL running locally. It bundles Apache, MySQL
+          (MariaDB), PHP, and phpMyAdmin into one installer &mdash; no manual configuration needed.</p>
+
+        <div class="install-steps">
+          <div class="install-step">
+            <div class="install-step-num">1</div>
+            <div class="install-step-body">
+              <h4>Download XAMPP</h4>
+              <p>Go to <strong>apachefriends.org</strong> and download the installer for your OS. Choose the version
+                with PHP 8.x and ensure MySQL is included.</p>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">2</div>
+            <div class="install-step-body">
+              <h4>Run the Installer</h4>
+              <p>Install to <code>C:\xampp</code> on Windows or <code>/Applications/XAMPP</code> on macOS. Ensure
+                <strong>MySQL</strong> and <strong>phpMyAdmin</strong> are checked.
+              </p>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">3</div>
+            <div class="install-step-body">
+              <h4>Start MySQL in the XAMPP Control Panel</h4>
+              <p>Open the XAMPP Control Panel. Click <strong>Start</strong> next to MySQL. Status turns green &mdash;
+                port 3306 is now listening.</p>
+              <div class="code-editor">
+                <div class="editor-header">verify port</div>
+                <pre><span class="cm"># Windows: confirm MySQL is on port 3306</span>
+netstat -an | findstr 3306
+
+<span class="cm"># macOS / Linux</span>
+lsof -i :3306</pre>
+              </div>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">4</div>
+            <div class="install-step-body">
+              <h4>Access phpMyAdmin</h4>
+              <p>Open <code>http://localhost/phpmyadmin</code>. Default: username <code>root</code>, password empty.
+                This is your visual database manager.</p>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">5</div>
+            <div class="install-step-body">
+              <h4>Connect via Terminal (Recommended)</h4>
+              <div class="code-editor">
+                <div class="editor-header">terminal</div>
+                <pre><span class="cm"># Windows</span>
+C:\xampp\mysql\bin\mysql.exe -u root -p
+
+<span class="cm"># macOS / Linux</span>
+/Applications/XAMPP/bin/mysql -u root -p
+
+<span class="cm"># After login, verify it works:</span>
+<span class="k">SHOW DATABASES</span>;</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>First Database Setup</h3>
+        <div class="code-editor">
+          <div class="editor-header">first_setup.sql</div>
+          <pre><span class="cm">-- Create your workspace database</span>
+<span class="k">CREATE DATABASE</span> myapp
+  <span class="k">CHARACTER SET</span> utf8mb4
+  <span class="k">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="k">USE</span> myapp;
+
+<span class="cm">-- Create a secure user (never use root in production)</span>
+<span class="k">CREATE USER</span> <span class="str">'dev'</span>@<span class="str">'localhost'</span> <span class="k">IDENTIFIED BY</span> <span class="str">'StrongPass123!'</span>;
+<span class="k">GRANT ALL PRIVILEGES ON</span> myapp.* <span class="k">TO</span> <span class="str">'dev'</span>@<span class="str">'localhost'</span>;
+<span class="k">FLUSH PRIVILEGES</span>;</pre>
+        </div>
+
+        <div class="warn-box">
+          <strong>Security Warning:</strong> Never use the <code>root</code> account with an empty password in
+          production. Always create a dedicated user with only the privileges your application needs.
+        </div>
+
+        <h3>Recommended Tools</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Type</th>
+              <th>Best For</th>
+              <th>Free?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>phpMyAdmin</td>
+              <td>Web UI</td>
+              <td>Quick browsing, exports</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td>MySQL Workbench</td>
+              <td>Desktop GUI</td>
+              <td>Schema design, ER diagrams</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td>DBeaver</td>
+              <td>Desktop GUI</td>
+              <td>Multi-database support</td>
+              <td class="yes">Yes (Community)</td>
+            </tr>
+            <tr>
+              <td>TablePlus</td>
+              <td>Desktop GUI</td>
+              <td>Fast, modern UI</td>
+              <td>Freemium</td>
+            </tr>
+            <tr>
+              <td>MySQL CLI</td>
+              <td>Terminal</td>
+              <td>Scripting, automation</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section id="arch-internals" class="doc-section">
+        <div class="section-badge">Architecture</div>
+        <h1>MySQL Server Internals</h1>
+        <p class="section-intro">MySQL processes every query through a strict layered pipeline. Understanding each layer
+          lets you debug slow queries, optimize schemas, and design production-grade systems.</p>
+
+        <h3>The 6-Layer Architecture</h3>
+        <div class="visual-arch-map">
+          <div class="arch-box blue">Layer 1 &mdash; Client / Connectors (PHP, Python, Java, JDBC)</div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-box">Layer 2 &mdash; Connection &amp; Thread Manager</div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-box">Layer 3 &mdash; SQL Parser &amp; Preprocessor</div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-box orange">Layer 4 &mdash; Query Optimizer (Cost-Based)</div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-box">Layer 5 &mdash; Handler API</div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-box green">Layer 6 &mdash; Storage Engine (InnoDB / MyISAM / Memory)</div>
+        </div>
+
+        <h3>Layer Reference Table</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Responsibility</th>
+              <th>Key Component</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Connectors</td>
+              <td>Language drivers and APIs</td>
+              <td>libmysqlclient, JDBC</td>
+            </tr>
+            <tr>
+              <td>Thread Manager</td>
+              <td>One thread per connection</td>
+              <td>Thread Pool Plugin</td>
+            </tr>
+            <tr>
+              <td>Parser</td>
+              <td>Lex and Yacc tokenization</td>
+              <td>Parse Tree builder</td>
+            </tr>
+            <tr>
+              <td>Optimizer</td>
+              <td>Choose best execution plan</td>
+              <td>Cost-Based Optimizer (CBO)</td>
+            </tr>
+            <tr>
+              <td>Handler API</td>
+              <td>Abstract the storage layer</td>
+              <td>ha_innobase</td>
+            </tr>
+            <tr>
+              <td>Storage Engine</td>
+              <td>Read and write physical data</td>
+              <td>InnoDB B-Tree files</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box">
+          <strong>Key Design Principle:</strong> MySQL separates <strong>query processing</strong> from <strong>data
+            storage</strong>. The server layer does not care whether data is in InnoDB, MyISAM, or CSV &mdash; it
+          communicates through the Handler API. This is why you can mix engines per table.
+        </div>
+      </section>
+
+      <section id="arch-flow" class="doc-section">
+        <div class="section-badge">Architecture</div>
+        <h2>The Query Life Cycle</h2>
+        <p class="section-intro">Every SQL statement travels through this exact pipeline before returning a result.
+          Knowing each step helps you understand why some queries are fast and others are slow.</p>
+
+        <div class="step-blocks">
+          <div class="step-block">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Connection Established</h4>
+              <p>MySQL authenticates the user against the <code>mysql.user</code> table. Assigns a thread. Loads
+                privilege cache for the session.</p>
+              <div class="code-editor">
+                <div class="editor-header">status check</div>
+                <pre><span class="k">SHOW STATUS</span> LIKE <span class="str">'Threads_connected'</span>;
+<span class="cm">-- Variable_name       | Value</span>
+<span class="cm">-- Threads_connected   | 3</span></pre>
+              </div>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Lexical Parsing</h4>
+              <p>The SQL string is broken into tokens. Keywords, identifiers, and literals are classified into a Parse
+                Tree.</p>
+              <div class="code-editor">
+                <div class="editor-header">token example</div>
+                <pre><span class="k">SELECT</span>   <span class="cm">-- keyword token</span>
+id       <span class="cm">-- identifier token</span>
+<span class="k">FROM</span>     <span class="cm">-- keyword token</span>
+users    <span class="cm">-- identifier token</span>
+<span class="k">WHERE</span>    <span class="cm">-- keyword token</span>
+age &gt; 18 <span class="cm">-- expression token</span></pre>
+              </div>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Optimization</h4>
+              <p>The Cost-Based Optimizer evaluates all possible index paths. It picks the plan with the lowest
+                estimated cost based on table statistics.</p>
+              <div class="code-editor">
+                <div class="editor-header">explain.sql</div>
+                <pre><span class="k">EXPLAIN SELECT</span> * <span class="k">FROM</span> users <span class="k">WHERE</span> age = 25;
+<span class="cm">-- type: ref | key: idx_age | rows: 12 | Extra: Using index</span></pre>
+              </div>
+            </div>
+          </div>
+          <div class="step-block">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>Execution and Return</h4>
+              <p>The Handler API calls the storage engine. The engine scans pages from the Buffer Pool or disk. The
+                result set is returned to the client.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="arch-engines" class="doc-section">
+        <div class="section-badge">Architecture</div>
+        <h2>Storage Engines Compared</h2>
+        <p class="section-intro">Choose your engine based on workload. Each engine uses the same SQL interface but
+          completely different internal storage mechanisms.</p>
+
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>InnoDB</th>
+              <th>MyISAM</th>
+              <th>Memory</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Transactions</td>
+              <td class="yes">Full ACID</td>
+              <td><span class="tag-no">None</span></td>
+              <td><span class="tag-no">None</span></td>
+            </tr>
+            <tr>
+              <td>Locking</td>
+              <td>Row-level</td>
+              <td>Table-level</td>
+              <td>Table-level</td>
+            </tr>
+            <tr>
+              <td>Foreign Keys</td>
+              <td class="yes">Supported</td>
+              <td><span class="tag-no">Not supported</span></td>
+              <td><span class="tag-no">Not supported</span></td>
+            </tr>
+            <tr>
+              <td>Crash Recovery</td>
+              <td class="yes">Redo Log</td>
+              <td><span class="tag-no">Manual repair</span></td>
+              <td><span class="tag-no">Lost on restart</span></td>
+            </tr>
+            <tr>
+              <td>Full-Text Search</td>
+              <td class="yes">MySQL 5.6+</td>
+              <td><span class="tag-yes">Yes</span></td>
+              <td><span class="tag-no">No</span></td>
+            </tr>
+            <tr>
+              <td>Best Use Case</td>
+              <td>All general-purpose apps</td>
+              <td>Read-heavy legacy</td>
+              <td>Temp/session data</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">switch_engine.sql</div>
+          <pre><span class="cm">-- Create a table using Memory engine</span>
+<span class="k">CREATE TABLE</span> sessions (
+  id   <span class="k">INT PRIMARY KEY</span>,
+  data <span class="k">VARCHAR</span>(255)
+) <span class="k">ENGINE</span>=Memory;
+
+<span class="cm">-- Migrate an existing table to InnoDB</span>
+<span class="k">ALTER TABLE</span> old_table <span class="k">ENGINE</span>=InnoDB;
+
+<span class="cm">-- Check what engine a table uses</span>
+<span class="k">SHOW TABLE STATUS</span> <span class="k">WHERE</span> Name = <span class="str">'users'</span>;</pre>
+        </div>
+      </section>
+      <section id="design-types" class="doc-section">
+        <h2>Data Type Logic</h2>
+        <p>Choosing the wrong data type wastes storage, kills index performance, and causes silent data corruption. Use
+          this reference every time you design a column.</p>
+
+        <h3>Numeric Types</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Storage</th>
+              <th>Range</th>
+              <th>Use When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>TINYINT</code></td>
+              <td>1 byte</td>
+              <td>-128 to 127</td>
+              <td>Status flags, booleans</td>
+            </tr>
+            <tr>
+              <td><code>SMALLINT</code></td>
+              <td>2 bytes</td>
+              <td>-32,768 to 32,767</td>
+              <td>Age, year fields</td>
+            </tr>
+            <tr>
+              <td><code>INT</code></td>
+              <td>4 bytes</td>
+              <td>±2.1 billion</td>
+              <td>IDs, counters</td>
+            </tr>
+            <tr>
+              <td><code>BIGINT</code></td>
+              <td>8 bytes</td>
+              <td>±9.2 quintillion</td>
+              <td>Large IDs, timestamps</td>
+            </tr>
+            <tr>
+              <td><code>DECIMAL(p,s)</code></td>
+              <td>Variable</td>
+              <td>Exact precision</td>
+              <td>Money — NEVER use FLOAT</td>
+            </tr>
+            <tr>
+              <td><code>FLOAT</code></td>
+              <td>4 bytes</td>
+              <td>Approximate</td>
+              <td>Scientific data only</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="lab-box"><span class="lab-tag error">Common Mistake</span>
+          <div class="code-editor">
+            <div class="editor-header">wrong.sql</div>
+            <pre>price FLOAT  -- [WRONG] 0.1 + 0.2 = 0.30000000004</pre>
+          </div>
+          <div class="code-editor">
+            <div class="editor-header">correct.sql</div>
+            <pre>price <span class="k">DECIMAL</span>(10,2)  -- [CORRECT] Exact: 0.10 + 0.20 = 0.30</pre>
+          </div>
+        </div>
+
+        <h3>String Types</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Max Size</th>
+              <th>Storage</th>
+              <th>Use When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CHAR(n)</code></td>
+              <td>255 chars</td>
+              <td>Fixed n bytes always</td>
+              <td>Fixed-length: country codes, hashes</td>
+            </tr>
+            <tr>
+              <td><code>VARCHAR(n)</code></td>
+              <td>65,535 chars</td>
+              <td>Actual length + 1-2 bytes</td>
+              <td>Variable text: names, emails</td>
+            </tr>
+            <tr>
+              <td><code>TEXT</code></td>
+              <td>65 KB</td>
+              <td>Off-row storage</td>
+              <td>Blog posts, descriptions</td>
+            </tr>
+            <tr>
+              <td><code>MEDIUMTEXT</code></td>
+              <td>16 MB</td>
+              <td>Off-row storage</td>
+              <td>HTML content, JSON docs</td>
+            </tr>
+            <tr>
+              <td><code>LONGTEXT</code></td>
+              <td>4 GB</td>
+              <td>Off-row storage</td>
+              <td>File contents, large blobs</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Date & Time Types</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Format</th>
+              <th>Range</th>
+              <th>Timezone Aware</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>DATE</code></td>
+              <td>YYYY-MM-DD</td>
+              <td>1000 to 9999</td>
+              <td><span class="tag-no">No</span></td>
+            </tr>
+            <tr>
+              <td><code>DATETIME</code></td>
+              <td>YYYY-MM-DD HH:MM:SS</td>
+              <td>1000 to 9999</td>
+              <td><span class="tag-no">No</span></td>
+            </tr>
+            <tr>
+              <td><code>TIMESTAMP</code></td>
+              <td>YYYY-MM-DD HH:MM:SS</td>
+              <td>1970 to 2038</td>
+              <td><span class="tag-yes">UTC stored</span></td>
+            </tr>
+            <tr>
+              <td><code>TIME</code></td>
+              <td>HH:MM:SS</td>
+              <td>-838 to 838 hours</td>
+              <td><span class="tag-no">No</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">data_types_example.sql</div>
+          <pre><span class="k">CREATE TABLE</span> products (
+  id        <span class="k">INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,
+  sku       <span class="k">CHAR</span>(10) <span class="k">NOT NULL</span>,
+  name      <span class="k">VARCHAR</span>(200) <span class="k">NOT NULL</span>,
+  price     <span class="k">DECIMAL</span>(10,2) <span class="k">NOT NULL</span>,
+  stock     <span class="k">SMALLINT UNSIGNED DEFAULT</span> 0,
+  active    <span class="k">TINYINT</span>(1) <span class="k">DEFAULT</span> 1,
+  created   <span class="k">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+);</pre>
+        </div>
+      </section>
+
+      <section id="design-ddl" class="doc-section">
+        <h2>DDL Commands: Building Structure</h2>
+        <p>DDL (Data Definition Language) commands define your schema. These do not modify data — they modify the
+          <em>structure</em> that holds data.
+        </p>
+
+        <h3>CREATE TABLE — Full Syntax</h3>
+        <div class="code-editor">
+          <div class="editor-header">create_table.sql</div>
+          <pre><span class="k">CREATE TABLE</span> users (
+  id         <span class="k">INT UNSIGNED AUTO_INCREMENT</span>,
+  username   <span class="k">VARCHAR</span>(50)  <span class="k">NOT NULL UNIQUE</span>,
+  email      <span class="k">VARCHAR</span>(255) <span class="k">NOT NULL UNIQUE</span>,
+  password   <span class="k">CHAR</span>(60)     <span class="k">NOT NULL</span>,
+  role       <span class="k">ENUM</span>('admin','user','guest') <span class="k">DEFAULT</span> 'user',
+  created_at <span class="k">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>,
+  updated_at <span class="k">TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</span>,
+  <span class="k">PRIMARY KEY</span> (id)
+) <span class="k">ENGINE</span>=InnoDB <span class="k">CHARSET</span>=utf8mb4;</pre>
+        </div>
+
+        <h3>ALTER TABLE — Modify Existing Tables</h3>
+        <div class="code-editor">
+          <div class="editor-header">alter_table.sql</div>
+          <pre><span class="k">ALTER TABLE</span> users <span class="k">ADD COLUMN</span> phone <span class="k">VARCHAR</span>(20) <span class="k">AFTER</span> email;
+<span class="k">ALTER TABLE</span> users <span class="k">MODIFY COLUMN</span> phone <span class="k">VARCHAR</span>(30) <span class="k">NOT NULL</span>;
+<span class="k">ALTER TABLE</span> users <span class="k">DROP COLUMN</span> phone;
+<span class="k">ALTER TABLE</span> users <span class="k">RENAME TO</span> members;
+<span class="k">ALTER TABLE</span> users <span class="k">ADD INDEX</span> idx_email (email);
+<span class="k">ALTER TABLE</span> users <span class="k">DROP INDEX</span> idx_email;</pre>
+        </div>
+
+        <h3>All DDL Commands Reference</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Purpose</th>
+              <th>Reversible?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CREATE TABLE</code></td>
+              <td>Create new table</td>
+              <td><span class="tag-yes">DROP TABLE</span></td>
+            </tr>
+            <tr>
+              <td><code>ALTER TABLE</code></td>
+              <td>Modify structure</td>
+              <td><span class="tag-warn">Partially</span></td>
+            </tr>
+            <tr>
+              <td><code>DROP TABLE</code></td>
+              <td>Delete table + data</td>
+              <td><span class="tag-no">Permanent</span></td>
+            </tr>
+            <tr>
+              <td><code>TRUNCATE TABLE</code></td>
+              <td>Delete all rows, reset AUTO_INCREMENT</td>
+              <td><span class="tag-no">Permanent</span></td>
+            </tr>
+            <tr>
+              <td><code>RENAME TABLE</code></td>
+              <td>Rename table</td>
+              <td><span class="tag-yes">Rename back</span></td>
+            </tr>
+            <tr>
+              <td><code>CREATE INDEX</code></td>
+              <td>Add index</td>
+              <td><span class="tag-yes">DROP INDEX</span></td>
+            </tr>
+            <tr>
+              <td><code>CREATE DATABASE</code></td>
+              <td>Create schema</td>
+              <td><span class="tag-yes">DROP DATABASE</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="design-constraints" class="doc-section">
+        <h2>Keys &amp; Constraints</h2>
+        <p>Constraints are rules enforced by the database engine at the storage level — not at the application level.
+          They are your last line of defense against corrupt data.</p>
+
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Constraint</th>
+              <th>What It Does</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>PRIMARY KEY</code></td>
+              <td>Unique, non-null row identifier</td>
+              <td><code>id INT PRIMARY KEY</code></td>
+            </tr>
+            <tr>
+              <td><code>UNIQUE</code></td>
+              <td>No duplicate values allowed</td>
+              <td><code>email VARCHAR UNIQUE</code></td>
+            </tr>
+            <tr>
+              <td><code>NOT NULL</code></td>
+              <td>Column must always have a value</td>
+              <td><code>name VARCHAR NOT NULL</code></td>
+            </tr>
+            <tr>
+              <td><code>DEFAULT</code></td>
+              <td>Fallback value if none given</td>
+              <td><code>status DEFAULT 'active'</code></td>
+            </tr>
+            <tr>
+              <td><code>CHECK</code></td>
+              <td>Custom condition validation</td>
+              <td><code>CHECK (age >= 18)</code></td>
+            </tr>
+            <tr>
+              <td><code>FOREIGN KEY</code></td>
+              <td>Referential integrity between tables</td>
+              <td><code>REFERENCES users(id)</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">foreign_key.sql</div>
+          <pre><span class="k">CREATE TABLE</span> orders (
+  id         <span class="k">INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,
+  user_id    <span class="k">INT UNSIGNED NOT NULL</span>,
+  total      <span class="k">DECIMAL</span>(10,2) <span class="k">NOT NULL</span>,
+  status     <span class="k">ENUM</span>('pending','paid','cancelled') <span class="k">DEFAULT</span> 'pending',
+  <span class="k">CONSTRAINT</span> fk_order_user
+    <span class="k">FOREIGN KEY</span> (user_id) <span class="k">REFERENCES</span> users(id)
+    <span class="k">ON DELETE CASCADE ON UPDATE CASCADE</span>
+);</pre>
+        </div>
+
+        <h3>Foreign Key Actions</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>On Parent Delete</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CASCADE</code></td>
+              <td>Auto-delete child rows</td>
+              <td>Comments when post is deleted</td>
+            </tr>
+            <tr>
+              <td><code>SET NULL</code></td>
+              <td>Set FK to NULL</td>
+              <td>Keep order history after user delete</td>
+            </tr>
+            <tr>
+              <td><code>RESTRICT</code></td>
+              <td>Block parent delete</td>
+              <td>Protect critical parent records</td>
+            </tr>
+            <tr>
+              <td><code>NO ACTION</code></td>
+              <td>Same as RESTRICT (deferred)</td>
+              <td>Default in some engines</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section id="norm-concept" class="doc-section">
+        <div class="section-badge">Normalization</div>
+        <h2>Anomalies Lab</h2>
+        <p class="section-intro">Before applying normal forms, you must learn to identify the three types of anomalies
+          that bad schema design creates.</p>
+
+        <div class="anomaly-grid">
+          <div class="lab-box">
+            <span class="lab-tag error">Insertion Anomaly</span>
+            <p>You cannot add a Course record without a Student being enrolled, because the Primary Key requires
+              StudentID.</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>StudentID</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Instructor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>101</td>
+                  <td>Ali</td>
+                  <td>SQL</td>
+                  <td>Dr. Kim</td>
+                </tr>
+                <tr>
+                  <td style="color:#dc2626">???</td>
+                  <td style="color:#dc2626">???</td>
+                  <td>Python</td>
+                  <td>Dr. Lee</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="lab-box">
+            <span class="lab-tag error">Update Anomaly</span>
+            <p>Dr. Kim's name is stored in 1000 rows. One missed update creates inconsistent data.</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>SID</th>
+                  <th>Course</th>
+                  <th>Instructor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>101</td>
+                  <td>SQL</td>
+                  <td>Dr. Kim</td>
+                </tr>
+                <tr>
+                  <td>102</td>
+                  <td>SQL</td>
+                  <td style="color:#dc2626">Dr. KIM</td>
+                </tr>
+                <tr>
+                  <td>103</td>
+                  <td>SQL</td>
+                  <td>Dr. Kim</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="lab-box anomaly-full">
+            <span class="lab-tag error">Deletion Anomaly</span>
+            <p>Deleting the only student enrolled in &quot;Python&quot; destroys all knowledge that the Python course
+              exists.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="norm-1nf" class="doc-section">
+        <div class="section-badge">Normalization</div>
+        <h2>1st Normal Form (1NF)</h2>
+        <p class="section-intro"><strong>Rule:</strong> Every column must hold exactly ONE atomic value. No
+          comma-separated lists, no arrays, no repeating groups.</p>
+
+        <div class="practical-split">
+          <div class="lab-box">
+            <span class="lab-tag error">BEFORE &mdash; Violates 1NF</span>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Phones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Sara</td>
+                  <td style="color:#dc2626">555-1234, 555-5678</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>John</td>
+                  <td>555-9999</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">Two phones in one cell &mdash; cannot index or
+              query individually.</p>
+          </div>
+          <div class="lab-box">
+            <span class="lab-tag success">AFTER &mdash; 1NF Compliant</span>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Sara</td>
+                  <td style="color:#16a34a">555-1234</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>Sara</td>
+                  <td style="color:#16a34a">555-5678</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>John</td>
+                  <td style="color:#16a34a">555-9999</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="code-editor">
+          <div class="editor-header">1nf_schema.sql</div>
+          <pre><span class="k">CREATE TABLE</span> user_phones (
+  user_id  <span class="k">INT NOT NULL</span>,
+  phone    <span class="k">VARCHAR</span>(20) <span class="k">NOT NULL</span>,
+  <span class="k">PRIMARY KEY</span> (user_id, phone),
+  <span class="k">FOREIGN KEY</span> (user_id) <span class="k">REFERENCES</span> users(id)
+);</pre>
+        </div>
+      </section>
+
+      <section id="norm-2nf" class="doc-section">
+        <div class="section-badge">Normalization</div>
+        <h2>2nd Normal Form (2NF)</h2>
+        <p class="section-intro"><strong>Rule:</strong> Must be in 1NF. Every non-key column must depend on the
+          <em>entire</em> composite primary key &mdash; not just part of it.
+        </p>
+
+        <div class="lab-box">
+          <span class="lab-tag error">BEFORE &mdash; Partial Dependency</span>
+          <p style="margin-bottom:1rem">PK = {StudentID + CourseID}</p>
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>StudentID</th>
+                <th>CourseID</th>
+                <th>StudentName</th>
+                <th>CourseName</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>101</td>
+                <td>C1</td>
+                <td>Ali</td>
+                <td>SQL Basics</td>
+                <td>A</td>
+              </tr>
+              <tr>
+                <td>101</td>
+                <td>C2</td>
+                <td>Ali</td>
+                <td>Python</td>
+                <td>B</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">StudentName depends only on StudentID (partial).
+            CourseName depends only on CourseID (partial).</p>
+        </div>
+
+        <div class="lab-box">
+          <span class="lab-tag success">AFTER &mdash; 2NF: Split into 3 Tables</span>
+          <div class="three-table-grid">
+            <div>
+              <p class="table-label-text">Students</p>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>StudentID PK</th>
+                    <th>StudentName</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>101</td>
+                    <td>Ali</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <p class="table-label-text">Courses</p>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>CourseID PK</th>
+                    <th>CourseName</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>C1</td>
+                    <td>SQL Basics</td>
+                  </tr>
+                  <tr>
+                    <td>C2</td>
+                    <td>Python</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <p class="table-label-text">Enrollments (junction)</p>
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>StudentID FK</th>
+                    <th>CourseID FK</th>
+                    <th>Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>101</td>
+                    <td>C1</td>
+                    <td>A</td>
+                  </tr>
+                  <tr>
+                    <td>101</td>
+                    <td>C2</td>
+                    <td>B</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="norm-3nf" class="doc-section">
+        <div class="section-badge">Normalization</div>
+        <h2>3rd Normal Form (3NF)</h2>
+        <p class="section-intro"><strong>Rule:</strong> Must be in 2NF. No transitive dependencies &mdash; non-key
+          columns must not depend on other non-key columns.</p>
+
+        <div class="practical-split">
+          <div class="lab-box">
+            <span class="lab-tag error">BEFORE &mdash; Transitive Dependency</span>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>EmpID PK</th>
+                  <th>Name</th>
+                  <th>DeptID</th>
+                  <th>DeptName</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>E1</td>
+                  <td>Ali</td>
+                  <td>D1</td>
+                  <td>Engineering</td>
+                  <td>Floor 3</td>
+                </tr>
+                <tr>
+                  <td>E2</td>
+                  <td>Sara</td>
+                  <td>D1</td>
+                  <td>Engineering</td>
+                  <td>Floor 3</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">EmpID &rarr; DeptID &rarr; DeptName, Location
+              (transitive chain)</p>
+          </div>
+          <div class="lab-box">
+            <span class="lab-tag success">AFTER &mdash; 3NF: Remove Transitive Chain</span>
+            <p class="table-label-text">Employees</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>EmpID</th>
+                  <th>Name</th>
+                  <th>DeptID FK</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>E1</td>
+                  <td>Ali</td>
+                  <td>D1</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="table-label-text" style="margin-top:1.25rem">Departments</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>DeptID</th>
+                  <th>DeptName</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>D1</td>
+                  <td>Engineering</td>
+                  <td>Floor 3</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <strong>Bill Kent's Rule:</strong> &ldquo;Every non-key attribute must provide a fact about the key, the whole
+          key, and nothing but the key &mdash; so help me Codd.&rdquo;
+        </div>
+      </section>
+
+      <section id="norm-bcnf" class="doc-section">
+        <div class="section-badge">Normalization</div>
+        <h2>BCNF &mdash; Boyce-Codd Normal Form</h2>
+        <p class="section-intro"><strong>Rule:</strong> For every functional dependency X &rarr; Y, X must be a
+          superkey. This is a stricter version of 3NF for tables with overlapping candidate keys.</p>
+
+        <div class="practical-split">
+          <div class="lab-box">
+            <span class="lab-tag error">3NF but NOT BCNF</span>
+            <p style="margin-bottom:1rem;font-size:0.88rem">A teacher only teaches one subject (Teacher &rarr; Subject),
+              but Teacher is not a superkey.</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Subject</th>
+                  <th>Teacher</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ali</td>
+                  <td>Math</td>
+                  <td>Dr. Smith</td>
+                </tr>
+                <tr>
+                  <td>Sara</td>
+                  <td>Math</td>
+                  <td>Dr. Smith</td>
+                </tr>
+                <tr>
+                  <td>Ali</td>
+                  <td>Physics</td>
+                  <td>Dr. Jones</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">Dr. Smith's subject is stored for every
+              student &mdash; update anomaly risk.</p>
+          </div>
+          <div class="lab-box">
+            <span class="lab-tag success">BCNF Solution</span>
+            <p class="table-label-text">TeacherSubject</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Teacher PK</th>
+                  <th>Subject</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Dr. Smith</td>
+                  <td>Math</td>
+                </tr>
+                <tr>
+                  <td>Dr. Jones</td>
+                  <td>Physics</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="table-label-text" style="margin-top:1.25rem">Enrollment</p>
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Teacher FK</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ali</td>
+                  <td>Dr. Smith</td>
+                </tr>
+                <tr>
+                  <td>Sara</td>
+                  <td>Dr. Smith</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section id="query-basics" class="doc-section">
+        <h2>SELECT &amp; Filter Mastery</h2>
+
+        <div class="code-editor">
+          <div class="editor-header">select_full.sql</div>
+          <pre><span class="k">SELECT</span> id, name, email
+<span class="k">FROM</span>   users
+<span class="k">WHERE</span>  age <span class="k">BETWEEN</span> 18 <span class="k">AND</span> 35
+  <span class="k">AND</span>  role = 'admin'
+  <span class="k">AND</span>  email <span class="k">LIKE</span> '%@gmail.com'
+<span class="k">ORDER BY</span> created_at <span class="k">DESC</span>
+<span class="k">LIMIT</span> 10 <span class="k">OFFSET</span> 20;</pre>
+        </div>
+
+        <h3>WHERE Clause Operators</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Example</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>=</code></td>
+              <td><code>age = 25</code></td>
+              <td>Exact match</td>
+            </tr>
+            <tr>
+              <td><code>!=</code> / <code>&lt;&gt;</code></td>
+              <td><code>status != 'deleted'</code></td>
+              <td>Not equal</td>
+            </tr>
+            <tr>
+              <td><code>BETWEEN</code></td>
+              <td><code>price BETWEEN 10 AND 50</code></td>
+              <td>Range inclusive</td>
+            </tr>
+            <tr>
+              <td><code>IN</code></td>
+              <td><code>role IN ('admin','mod')</code></td>
+              <td>Value in list</td>
+            </tr>
+            <tr>
+              <td><code>NOT IN</code></td>
+              <td><code>status NOT IN ('banned')</code></td>
+              <td>Value not in list</td>
+            </tr>
+            <tr>
+              <td><code>LIKE</code></td>
+              <td><code>name LIKE 'Ali%'</code></td>
+              <td>Pattern match (slow on large tables)</td>
+            </tr>
+            <tr>
+              <td><code>IS NULL</code></td>
+              <td><code>deleted_at IS NULL</code></td>
+              <td>Check for null</td>
+            </tr>
+            <tr>
+              <td><code>IS NOT NULL</code></td>
+              <td><code>email IS NOT NULL</code></td>
+              <td>Must have value</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">dml_commands.sql</div>
+          <pre><span class="k">INSERT INTO</span> users (name, email) <span class="k">VALUES</span> ('Ali', 'ali@test.com');
+<span class="k">INSERT INTO</span> users (name, email) <span class="k">VALUES</span>
+  ('Sara', 'sara@test.com'),
+  ('John', 'john@test.com');
+
+<span class="k">UPDATE</span> users <span class="k">SET</span> role = 'admin' <span class="k">WHERE</span> id = 1;
+
+<span class="k">DELETE FROM</span> users <span class="k">WHERE</span> last_login < '2023-01-01';
+
+<span class="k">SELECT</span> * <span class="k">FROM</span> users <span class="k">WHERE</span> id <span class="k">IN</span> (1, 5, 9);</pre>
+        </div>
+      </section>
+
+      <section id="query-joins" class="doc-section">
+        <h2>Joins Lab — All Join Types</h2>
+        <p>Joins combine rows from two or more tables based on a related column.</p>
+
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Join Type</th>
+              <th>Returns</th>
+              <th>Common Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>INNER JOIN</code></td>
+              <td>Rows matching in BOTH tables</td>
+              <td>Users with orders</td>
+            </tr>
+            <tr>
+              <td><code>LEFT JOIN</code></td>
+              <td>ALL left rows + matching right</td>
+              <td>All users, orders if any</td>
+            </tr>
+            <tr>
+              <td><code>RIGHT JOIN</code></td>
+              <td>ALL right rows + matching left</td>
+              <td>All orders, user if exists</td>
+            </tr>
+            <tr>
+              <td><code>CROSS JOIN</code></td>
+              <td>Every combination (cartesian)</td>
+              <td>Generating combinations</td>
+            </tr>
+            <tr>
+              <td><code>SELF JOIN</code></td>
+              <td>Table joined to itself</td>
+              <td>Employee → Manager hierarchy</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">all_joins.sql</div>
+          <pre><span class="k">-- INNER JOIN: only users who placed orders</span>
+<span class="k">SELECT</span> u.name, o.total
+<span class="k">FROM</span> users u
+<span class="k">INNER JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id;
+
+<span class="k">-- LEFT JOIN: all users, NULL if no orders</span>
+<span class="k">SELECT</span> u.name, o.total
+<span class="k">FROM</span> users u
+<span class="k">LEFT JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id;
+
+<span class="k">-- Find users with NO orders</span>
+<span class="k">SELECT</span> u.name
+<span class="k">FROM</span> users u
+<span class="k">LEFT JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id
+<span class="k">WHERE</span> o.id <span class="k">IS NULL</span>;
+
+<span class="k">-- SELF JOIN: find employee + manager name</span>
+<span class="k">SELECT</span> e.name <span class="k">AS</span> Employee, m.name <span class="k">AS</span> Manager
+<span class="k">FROM</span> employees e
+<span class="k">LEFT JOIN</span> employees m <span class="k">ON</span> e.manager_id = m.id;</pre>
+        </div>
+      </section>
+
+      <section id="query-agg" class="doc-section">
+        <h2>Aggregation &amp; GROUP BY</h2>
+
+        <div class="code-editor">
+          <div class="editor-header">aggregation.sql</div>
+          <pre><span class="k">SELECT</span>
+  dept,
+  <span class="k">COUNT</span>(*) <span class="k">AS</span> total_employees,
+  <span class="k">AVG</span>(salary) <span class="k">AS</span> avg_salary,
+  <span class="k">MAX</span>(salary) <span class="k">AS</span> top_salary,
+  <span class="k">MIN</span>(salary) <span class="k">AS</span> lowest_salary,
+  <span class="k">SUM</span>(salary) <span class="k">AS</span> payroll
+<span class="k">FROM</span> employees
+<span class="k">WHERE</span> active = 1
+<span class="k">GROUP BY</span> dept
+<span class="k">HAVING</span> <span class="k">AVG</span>(salary) > 50000
+<span class="k">ORDER BY</span> payroll <span class="k">DESC</span>;</pre>
+        </div>
+
+        <h3>Aggregate Functions</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Function</th>
+              <th>Returns</th>
+              <th>Ignores NULL?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>COUNT(*)</code></td>
+              <td>Total rows</td>
+              <td><span class="tag-no">Counts NULLs</span></td>
+            </tr>
+            <tr>
+              <td><code>COUNT(col)</code></td>
+              <td>Non-null count</td>
+              <td><span class="tag-yes">Skips NULLs</span></td>
+            </tr>
+            <tr>
+              <td><code>SUM(col)</code></td>
+              <td>Total value</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td><code>AVG(col)</code></td>
+              <td>Average value</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td><code>MAX(col)</code></td>
+              <td>Largest value</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td><code>MIN(col)</code></td>
+              <td>Smallest value</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td><code>GROUP_CONCAT(col)</code></td>
+              <td>Comma-joined string</td>
+              <td><span class="tag-yes">Yes</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="lab-box">
+          <span class="lab-tag success">WHERE vs HAVING</span>
+          <p><code>WHERE</code> filters <strong>rows before grouping</strong>. <code>HAVING</code> filters
+            <strong>groups after aggregation</strong>.
+          </p>
+        </div>
+      </section>
+
+      <section id="query-sub" class="doc-section">
+        <h2>Subqueries &amp; CTEs</h2>
+
+        <div class="code-editor">
+          <div class="editor-header">subqueries.sql</div>
+          <pre><span class="k">-- Scalar subquery</span>
+<span class="k">SELECT</span> name, salary,
+  salary - (<span class="k">SELECT AVG</span>(salary) <span class="k">FROM</span> employees) <span class="k">AS</span> diff_from_avg
+<span class="k">FROM</span> employees;
+
+<span class="k">-- IN subquery: users who placed orders</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> users
+<span class="k">WHERE</span> id <span class="k">IN</span> (<span class="k">SELECT DISTINCT</span> user_id <span class="k">FROM</span> orders);
+
+<span class="k">-- Correlated subquery: orders above user avg</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> orders o
+<span class="k">WHERE</span> total > (
+  <span class="k">SELECT AVG</span>(total) <span class="k">FROM</span> orders
+  <span class="k">WHERE</span> user_id = o.user_id
+);
+
+<span class="k">-- CTE (Common Table Expression)</span>
+<span class="k">WITH</span> high_earners <span class="k">AS</span> (
+  <span class="k">SELECT</span> * <span class="k">FROM</span> employees <span class="k">WHERE</span> salary > 80000
+)
+<span class="k">SELECT</span> dept, <span class="k">COUNT</span>(*) <span class="k">FROM</span> high_earners <span class="k">GROUP BY</span> dept;</pre>
+        </div>
+      </section>
+      <section id="perf-indexing" class="doc-section">
+        <h2>Indexing — B-Tree Internals</h2>
+        <p>An index is a sorted data structure that lets MySQL find rows without scanning the entire table.</p>
+
+        <div class="visual-arch-map">
+          <div class="arch-box blue">Root Node: [50]</div>
+          <div class="arch-arrow">↙ ↘</div>
+          <div style="display:flex;gap:2rem;justify-content:center;width:100%">
+            <div class="arch-box">[10, 30]</div>
+            <div class="arch-box">[60, 80]</div>
+          </div>
+          <div class="arch-arrow">Leaf nodes → sorted linked list → actual row data</div>
+        </div>
+
+        <h3>Index Types</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Structure</th>
+              <th>Supports Range?</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>B-Tree</td>
+              <td>Balanced tree</td>
+              <td><span class="tag-yes">Yes</span></td>
+              <td>Default — most use cases</td>
+            </tr>
+            <tr>
+              <td>Hash</td>
+              <td>Hash table</td>
+              <td><span class="tag-no">Equality only</span></td>
+              <td>MEMORY engine only</td>
+            </tr>
+            <tr>
+              <td>Full-Text</td>
+              <td>Inverted index</td>
+              <td>N/A</td>
+              <td>Text search (MATCH AGAINST)</td>
+            </tr>
+            <tr>
+              <td>Spatial (R-Tree)</td>
+              <td>R-Tree</td>
+              <td><span class="tag-yes">Geo ranges</span></td>
+              <td>Geographic queries</td>
+            </tr>
+            <tr>
+              <td>Composite</td>
+              <td>Multi-column B-Tree</td>
+              <td><span class="tag-yes">Left-prefix rule</span></td>
+              <td>Multi-column WHERE</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">indexing.sql</div>
+          <pre><span class="k">-- Single column index</span>
+<span class="k">CREATE INDEX</span> idx_email <span class="k">ON</span> users(email);
+
+<span class="k">-- Composite index (left-prefix rule applies)</span>
+<span class="k">CREATE INDEX</span> idx_name_age <span class="k">ON</span> users(last_name, first_name, age);
+
+<span class="k">-- Unique index</span>
+<span class="k">CREATE UNIQUE INDEX</span> idx_sku <span class="k">ON</span> products(sku);
+
+<span class="k">-- Full-text index</span>
+<span class="k">CREATE FULLTEXT INDEX</span> idx_body <span class="k">ON</span> posts(body);
+
+<span class="k">-- Covering index: query only uses index, never touches table</span>
+<span class="k">CREATE INDEX</span> idx_cov <span class="k">ON</span> orders(user_id, status, total);
+<span class="k">SELECT</span> total <span class="k">FROM</span> orders <span class="k">WHERE</span> user_id=1 <span class="k">AND</span> status='paid';
+<span class="k">-- Extra: Using index ← never touched the table!</span>
+
+<span class="k">-- Show existing indexes</span>
+<span class="k">SHOW INDEX FROM</span> users;
+
+<span class="k">-- Remove unused index</span>
+<span class="k">DROP INDEX</span> idx_email <span class="k">ON</span> users;</pre>
+        </div>
+
+        <div class="lab-box">
+          <span class="lab-tag error">What kills index usage</span>
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Anti-Pattern</th>
+                <th>Why It Breaks Index</th>
+                <th>Fix</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>WHERE YEAR(created_at) = 2024</code></td>
+                <td>Function wraps the column</td>
+                <td><code>WHERE created_at BETWEEN '2024-01-01' AND '2024-12-31'</code></td>
+              </tr>
+              <tr>
+                <td><code>WHERE name LIKE '%ali%'</code></td>
+                <td>Leading wildcard</td>
+                <td>Use FULLTEXT index instead</td>
+              </tr>
+              <tr>
+                <td><code>WHERE id + 1 = 5</code></td>
+                <td>Math on indexed column</td>
+                <td><code>WHERE id = 4</code></td>
+              </tr>
+              <tr>
+                <td><code>WHERE status != 'active'</code></td>
+                <td>NOT/NE has low selectivity</td>
+                <td>Index on positive condition</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="perf-explain" class="doc-section">
+        <h2>EXPLAIN — Reading Query Plans</h2>
+        <p><code>EXPLAIN</code> is the most important diagnostic tool in MySQL. It shows you <em>exactly</em> how the
+          server will execute your query.</p>
+
+        <div class="code-editor">
+          <div class="editor-header">explain.sql</div>
+          <pre><span class="k">EXPLAIN SELECT</span> u.name, o.total
+<span class="k">FROM</span> users u
+<span class="k">JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id
+<span class="k">WHERE</span> u.role = 'admin' <span class="k">AND</span> o.status = 'paid';</pre>
+        </div>
+
+        <h3>EXPLAIN Output Columns</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>What To Look For</th>
+              <th>Bad Sign</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>type</code></td>
+              <td>system &gt; const &gt; ref &gt; range &gt; index &gt; ALL</td>
+              <td><code>ALL</code> = full table scan</td>
+            </tr>
+            <tr>
+              <td><code>key</code></td>
+              <td>Which index is being used</td>
+              <td><code>NULL</code> = no index used</td>
+            </tr>
+            <tr>
+              <td><code>rows</code></td>
+              <td>Estimated rows to examine</td>
+              <td>Very high number</td>
+            </tr>
+            <tr>
+              <td><code>Extra</code></td>
+              <td>Additional info</td>
+              <td><code>Using filesort</code>, <code>Using temporary</code></td>
+            </tr>
+            <tr>
+              <td><code>filtered</code></td>
+              <td>% of rows passing WHERE</td>
+              <td>Low % = inefficient</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">explain_format.sql</div>
+          <pre><span class="k">EXPLAIN FORMAT</span>=JSON <span class="k">SELECT</span> * <span class="k">FROM</span> orders <span class="k">WHERE</span> user_id = 5;
+
+<span class="k">EXPLAIN ANALYZE SELECT</span> * <span class="k">FROM</span> users <span class="k">WHERE</span> email = 'x@y.com';
+<span class="k">-- Returns actual runtime stats, not just estimates</span></pre>
+        </div>
+      </section>
+
+      <section id="perf-acid" class="doc-section">
+        <h2>ACID &amp; Transaction Logs</h2>
+
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Meaning</th>
+              <th>InnoDB Mechanism</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Atomicity</td>
+              <td>All-or-nothing execution</td>
+              <td>Undo Log — rollback on failure</td>
+            </tr>
+            <tr>
+              <td>Consistency</td>
+              <td>DB moves valid state to valid state</td>
+              <td>Constraints + FK checks</td>
+            </tr>
+            <tr>
+              <td>Isolation</td>
+              <td>Transactions don't interfere</td>
+              <td>MVCC + locking</td>
+            </tr>
+            <tr>
+              <td>Durability</td>
+              <td>Committed data survives crash</td>
+              <td>Redo Log → flush to disk</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">transactions.sql</div>
+          <pre><span class="k">START TRANSACTION</span>;
+
+<span class="k">UPDATE</span> accounts <span class="k">SET</span> balance = balance - 500 <span class="k">WHERE</span> id = 1;
+<span class="k">UPDATE</span> accounts <span class="k">SET</span> balance = balance + 500 <span class="k">WHERE</span> id = 2;
+
+<span class="k">-- Only commit if both succeed</span>
+<span class="k">COMMIT</span>;
+
+<span class="k">-- Undo everything if error occurs</span>
+<span class="k">ROLLBACK</span>;
+
+<span class="k">-- Savepoints for partial rollback</span>
+<span class="k">SAVEPOINT</span> after_debit;
+<span class="k">ROLLBACK TO</span> after_debit;</pre>
+        </div>
+
+        <h3>Isolation Levels</h3>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Dirty Read</th>
+              <th>Non-Repeatable Read</th>
+              <th>Phantom Read</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>READ UNCOMMITTED</td>
+              <td><span class="tag-yes">Possible</span></td>
+              <td><span class="tag-yes">Possible</span></td>
+              <td><span class="tag-yes">Possible</span></td>
+            </tr>
+            <tr>
+              <td>READ COMMITTED</td>
+              <td><span class="tag-no">Prevented</span></td>
+              <td><span class="tag-yes">Possible</span></td>
+              <td><span class="tag-yes">Possible</span></td>
+            </tr>
+            <tr>
+              <td>REPEATABLE READ (default)</td>
+              <td><span class="tag-no">--</span></td>
+              <td><span class="tag-no">Prevented</span></td>
+              <td><span class="tag-yes">Possible</span></td>
+            </tr>
+            <tr>
+              <td>SERIALIZABLE</td>
+              <td><span class="tag-no">--</span></td>
+              <td><span class="tag-no">--</span></td>
+              <td><span class="tag-no">Prevented</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-editor">
+          <div class="editor-header">isolation.sql</div>
+          <pre><span class="k">SET SESSION TRANSACTION ISOLATION LEVEL</span> READ COMMITTED;
+<span class="k">SHOW VARIABLES LIKE</span> 'transaction_isolation';</pre>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+
+</html>

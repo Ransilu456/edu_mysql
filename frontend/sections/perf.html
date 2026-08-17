@@ -1,0 +1,137 @@
+<section id="perf-indexing" class="doc-section">
+<h2>Indexing — B-Tree Internals</h2>
+<p>An index is a sorted data structure that lets MySQL find rows without scanning the entire table.</p>
+
+<div class="visual-arch-map">
+  <div class="arch-box blue">Root Node: [50]</div>
+  <div class="arch-arrow">↙ ↘</div>
+  <div style="display:flex;gap:2rem;justify-content:center;width:100%">
+    <div class="arch-box">[10, 30]</div>
+    <div class="arch-box">[60, 80]</div>
+  </div>
+  <div class="arch-arrow">Leaf nodes → sorted linked list → actual row data</div>
+</div>
+
+<h3>Index Types</h3>
+<table class="doc-table">
+  <thead><tr><th>Type</th><th>Structure</th><th>Supports Range?</th><th>Use Case</th></tr></thead>
+  <tbody>
+    <tr><td>B-Tree</td><td>Balanced tree</td><td>✅ Yes</td><td>Default — most use cases</td></tr>
+    <tr><td>Hash</td><td>Hash table</td><td>❌ Equality only</td><td>MEMORY engine only</td></tr>
+    <tr><td>Full-Text</td><td>Inverted index</td><td>N/A</td><td>Text search (MATCH AGAINST)</td></tr>
+    <tr><td>Spatial (R-Tree)</td><td>R-Tree</td><td>✅ Geo ranges</td><td>Geographic queries</td></tr>
+    <tr><td>Composite</td><td>Multi-column B-Tree</td><td>✅ Left-prefix rule</td><td>Multi-column WHERE</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">indexing.sql</div>
+<pre><span class="k">-- Single column index</span>
+<span class="k">CREATE INDEX</span> idx_email <span class="k">ON</span> users(email);
+
+<span class="k">-- Composite index (left-prefix rule applies)</span>
+<span class="k">CREATE INDEX</span> idx_name_age <span class="k">ON</span> users(last_name, first_name, age);
+
+<span class="k">-- Unique index</span>
+<span class="k">CREATE UNIQUE INDEX</span> idx_sku <span class="k">ON</span> products(sku);
+
+<span class="k">-- Full-text index</span>
+<span class="k">CREATE FULLTEXT INDEX</span> idx_body <span class="k">ON</span> posts(body);
+
+<span class="k">-- Covering index: query only uses index, never touches table</span>
+<span class="k">CREATE INDEX</span> idx_cov <span class="k">ON</span> orders(user_id, status, total);
+<span class="k">SELECT</span> total <span class="k">FROM</span> orders <span class="k">WHERE</span> user_id=1 <span class="k">AND</span> status='paid';
+<span class="k">-- Extra: Using index ← never touched the table!</span>
+
+<span class="k">-- Show existing indexes</span>
+<span class="k">SHOW INDEX FROM</span> users;
+
+<span class="k">-- Remove unused index</span>
+<span class="k">DROP INDEX</span> idx_email <span class="k">ON</span> users;</pre></div>
+
+<div class="lab-box">
+  <span class="lab-tag error">What kills index usage</span>
+  <table class="doc-table">
+    <thead><tr><th>Anti-Pattern</th><th>Why It Breaks Index</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><code>WHERE YEAR(created_at) = 2024</code></td><td>Function wraps the column</td><td><code>WHERE created_at BETWEEN '2024-01-01' AND '2024-12-31'</code></td></tr>
+      <tr><td><code>WHERE name LIKE '%ali%'</code></td><td>Leading wildcard</td><td>Use FULLTEXT index instead</td></tr>
+      <tr><td><code>WHERE id + 1 = 5</code></td><td>Math on indexed column</td><td><code>WHERE id = 4</code></td></tr>
+      <tr><td><code>WHERE status != 'active'</code></td><td>NOT/NE has low selectivity</td><td>Index on positive condition</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<section id="perf-explain" class="doc-section">
+<h2>EXPLAIN — Reading Query Plans</h2>
+<p><code>EXPLAIN</code> is the most important diagnostic tool in MySQL. It shows you <em>exactly</em> how the server will execute your query.</p>
+
+<div class="code-editor"><div class="editor-header">explain.sql</div>
+<pre><span class="k">EXPLAIN SELECT</span> u.name, o.total
+<span class="k">FROM</span> users u
+<span class="k">JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id
+<span class="k">WHERE</span> u.role = 'admin' <span class="k">AND</span> o.status = 'paid';</pre></div>
+
+<h3>EXPLAIN Output Columns</h3>
+<table class="doc-table">
+  <thead><tr><th>Column</th><th>What To Look For</th><th>Bad Sign</th></tr></thead>
+  <tbody>
+    <tr><td><code>type</code></td><td>system &gt; const &gt; ref &gt; range &gt; index &gt; ALL</td><td><code>ALL</code> = full table scan</td></tr>
+    <tr><td><code>key</code></td><td>Which index is being used</td><td><code>NULL</code> = no index used</td></tr>
+    <tr><td><code>rows</code></td><td>Estimated rows to examine</td><td>Very high number</td></tr>
+    <tr><td><code>Extra</code></td><td>Additional info</td><td><code>Using filesort</code>, <code>Using temporary</code></td></tr>
+    <tr><td><code>filtered</code></td><td>% of rows passing WHERE</td><td>Low % = inefficient</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">explain_format.sql</div>
+<pre><span class="k">EXPLAIN FORMAT</span>=JSON <span class="k">SELECT</span> * <span class="k">FROM</span> orders <span class="k">WHERE</span> user_id = 5;
+
+<span class="k">EXPLAIN ANALYZE SELECT</span> * <span class="k">FROM</span> users <span class="k">WHERE</span> email = 'x@y.com';
+<span class="k">-- Returns actual runtime stats, not just estimates</span></pre></div>
+</section>
+
+<section id="perf-acid" class="doc-section">
+<h2>ACID &amp; Transaction Logs</h2>
+
+<table class="doc-table">
+  <thead><tr><th>Property</th><th>Meaning</th><th>InnoDB Mechanism</th></tr></thead>
+  <tbody>
+    <tr><td>Atomicity</td><td>All-or-nothing execution</td><td>Undo Log — rollback on failure</td></tr>
+    <tr><td>Consistency</td><td>DB moves valid state to valid state</td><td>Constraints + FK checks</td></tr>
+    <tr><td>Isolation</td><td>Transactions don't interfere</td><td>MVCC + locking</td></tr>
+    <tr><td>Durability</td><td>Committed data survives crash</td><td>Redo Log → flush to disk</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">transactions.sql</div>
+<pre><span class="k">START TRANSACTION</span>;
+
+<span class="k">UPDATE</span> accounts <span class="k">SET</span> balance = balance - 500 <span class="k">WHERE</span> id = 1;
+<span class="k">UPDATE</span> accounts <span class="k">SET</span> balance = balance + 500 <span class="k">WHERE</span> id = 2;
+
+<span class="k">-- Only commit if both succeed</span>
+<span class="k">COMMIT</span>;
+
+<span class="k">-- Undo everything if error occurs</span>
+<span class="k">ROLLBACK</span>;
+
+<span class="k">-- Savepoints for partial rollback</span>
+<span class="k">SAVEPOINT</span> after_debit;
+<span class="k">ROLLBACK TO</span> after_debit;</pre></div>
+
+<h3>Isolation Levels</h3>
+<table class="doc-table">
+  <thead><tr><th>Level</th><th>Dirty Read</th><th>Non-Repeatable Read</th><th>Phantom Read</th></tr></thead>
+  <tbody>
+    <tr><td>READ UNCOMMITTED</td><td>✅ Possible</td><td>✅ Possible</td><td>✅ Possible</td></tr>
+    <tr><td>READ COMMITTED</td><td>❌ Prevented</td><td>✅ Possible</td><td>✅ Possible</td></tr>
+    <tr><td>REPEATABLE READ (default)</td><td>❌</td><td>❌ Prevented</td><td>✅ Possible</td></tr>
+    <tr><td>SERIALIZABLE</td><td>❌</td><td>❌</td><td>❌ Prevented</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">isolation.sql</div>
+<pre><span class="k">SET SESSION TRANSACTION ISOLATION LEVEL</span> READ COMMITTED;
+<span class="k">SHOW VARIABLES LIKE</span> 'transaction_isolation';</pre></div>
+</section>

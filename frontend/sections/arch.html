@@ -1,0 +1,119 @@
+<section id="arch-internals" class="doc-section">
+<div class="section-badge">Architecture</div>
+<h1>MySQL Server Internals</h1>
+<p class="section-intro">MySQL processes every query through a strict layered pipeline. Understanding each layer lets you debug slow queries, optimize schemas, and design production-grade systems.</p>
+
+<h3>The 6-Layer Architecture</h3>
+<div class="visual-arch-map">
+  <div class="arch-box blue">Layer 1 &mdash; Client / Connectors (PHP, Python, Java, JDBC)</div>
+  <div class="arch-arrow">&#8595;</div>
+  <div class="arch-box">Layer 2 &mdash; Connection &amp; Thread Manager</div>
+  <div class="arch-arrow">&#8595;</div>
+  <div class="arch-box">Layer 3 &mdash; SQL Parser &amp; Preprocessor</div>
+  <div class="arch-arrow">&#8595;</div>
+  <div class="arch-box orange">Layer 4 &mdash; Query Optimizer (Cost-Based)</div>
+  <div class="arch-arrow">&#8595;</div>
+  <div class="arch-box">Layer 5 &mdash; Handler API</div>
+  <div class="arch-arrow">&#8595;</div>
+  <div class="arch-box green">Layer 6 &mdash; Storage Engine (InnoDB / MyISAM / Memory)</div>
+</div>
+
+<h3>Layer Reference Table</h3>
+<table class="doc-table">
+  <thead><tr><th>Layer</th><th>Responsibility</th><th>Key Component</th></tr></thead>
+  <tbody>
+    <tr><td>Connectors</td><td>Language drivers and APIs</td><td>libmysqlclient, JDBC</td></tr>
+    <tr><td>Thread Manager</td><td>One thread per connection</td><td>Thread Pool Plugin</td></tr>
+    <tr><td>Parser</td><td>Lex and Yacc tokenization</td><td>Parse Tree builder</td></tr>
+    <tr><td>Optimizer</td><td>Choose best execution plan</td><td>Cost-Based Optimizer (CBO)</td></tr>
+    <tr><td>Handler API</td><td>Abstract the storage layer</td><td>ha_innobase</td></tr>
+    <tr><td>Storage Engine</td><td>Read and write physical data</td><td>InnoDB B-Tree files</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+<strong>Key Design Principle:</strong> MySQL separates <strong>query processing</strong> from <strong>data storage</strong>. The server layer does not care whether data is in InnoDB, MyISAM, or CSV &mdash; it communicates through the Handler API. This is why you can mix engines per table.
+</div>
+</section>
+
+<section id="arch-flow" class="doc-section">
+<div class="section-badge">Architecture</div>
+<h2>The Query Life Cycle</h2>
+<p class="section-intro">Every SQL statement travels through this exact pipeline before returning a result. Knowing each step helps you understand why some queries are fast and others are slow.</p>
+
+<div class="step-blocks">
+  <div class="step-block">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Connection Established</h4>
+      <p>MySQL authenticates the user against the <code>mysql.user</code> table. Assigns a thread. Loads privilege cache for the session.</p>
+      <div class="code-editor"><div class="editor-header">status check</div>
+<pre><span class="k">SHOW STATUS</span> LIKE <span class="str">'Threads_connected'</span>;
+<span class="cm">-- Variable_name       | Value</span>
+<span class="cm">-- Threads_connected   | 3</span></pre></div>
+    </div>
+  </div>
+  <div class="step-block">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Lexical Parsing</h4>
+      <p>The SQL string is broken into tokens. Keywords, identifiers, and literals are classified into a Parse Tree.</p>
+      <div class="code-editor"><div class="editor-header">token example</div>
+<pre><span class="k">SELECT</span>   <span class="cm">-- keyword token</span>
+id       <span class="cm">-- identifier token</span>
+<span class="k">FROM</span>     <span class="cm">-- keyword token</span>
+users    <span class="cm">-- identifier token</span>
+<span class="k">WHERE</span>    <span class="cm">-- keyword token</span>
+age &gt; 18 <span class="cm">-- expression token</span></pre></div>
+    </div>
+  </div>
+  <div class="step-block">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Optimization</h4>
+      <p>The Cost-Based Optimizer evaluates all possible index paths. It picks the plan with the lowest estimated cost based on table statistics.</p>
+      <div class="code-editor"><div class="editor-header">explain.sql</div>
+<pre><span class="k">EXPLAIN SELECT</span> * <span class="k">FROM</span> users <span class="k">WHERE</span> age = 25;
+<span class="cm">-- type: ref | key: idx_age | rows: 12 | Extra: Using index</span></pre></div>
+    </div>
+  </div>
+  <div class="step-block">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Execution and Return</h4>
+      <p>The Handler API calls the storage engine. The engine scans pages from the Buffer Pool or disk. The result set is returned to the client.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="arch-engines" class="doc-section">
+<div class="section-badge">Architecture</div>
+<h2>Storage Engines Compared</h2>
+<p class="section-intro">Choose your engine based on workload. Each engine uses the same SQL interface but completely different internal storage mechanisms.</p>
+
+<table class="doc-table">
+  <thead><tr><th>Feature</th><th>InnoDB</th><th>MyISAM</th><th>Memory</th></tr></thead>
+  <tbody>
+    <tr><td>Transactions</td><td class="yes">Full ACID</td><td class="no">None</td><td class="no">None</td></tr>
+    <tr><td>Locking</td><td>Row-level</td><td>Table-level</td><td>Table-level</td></tr>
+    <tr><td>Foreign Keys</td><td class="yes">Supported</td><td class="no">Not supported</td><td class="no">Not supported</td></tr>
+    <tr><td>Crash Recovery</td><td class="yes">Redo Log</td><td class="no">Manual repair</td><td class="no">Lost on restart</td></tr>
+    <tr><td>Full-Text Search</td><td class="yes">MySQL 5.6+</td><td class="yes">Yes</td><td class="no">No</td></tr>
+    <tr><td>Best Use Case</td><td>All general-purpose apps</td><td>Read-heavy legacy</td><td>Temp/session data</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">switch_engine.sql</div>
+<pre><span class="cm">-- Create a table using Memory engine</span>
+<span class="k">CREATE TABLE</span> sessions (
+  id   <span class="k">INT PRIMARY KEY</span>,
+  data <span class="k">VARCHAR</span>(255)
+) <span class="k">ENGINE</span>=Memory;
+
+<span class="cm">-- Migrate an existing table to InnoDB</span>
+<span class="k">ALTER TABLE</span> old_table <span class="k">ENGINE</span>=InnoDB;
+
+<span class="cm">-- Check what engine a table uses</span>
+<span class="k">SHOW TABLE STATUS</span> <span class="k">WHERE</span> Name = <span class="str">'users'</span>;</pre></div>
+</section>

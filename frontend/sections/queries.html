@@ -1,0 +1,141 @@
+<section id="query-basics" class="doc-section">
+<h2>SELECT &amp; Filter Mastery</h2>
+
+<div class="code-editor"><div class="editor-header">select_full.sql</div>
+<pre><span class="k">SELECT</span> id, name, email
+<span class="k">FROM</span>   users
+<span class="k">WHERE</span>  age <span class="k">BETWEEN</span> 18 <span class="k">AND</span> 35
+  <span class="k">AND</span>  role = 'admin'
+  <span class="k">AND</span>  email <span class="k">LIKE</span> '%@gmail.com'
+<span class="k">ORDER BY</span> created_at <span class="k">DESC</span>
+<span class="k">LIMIT</span> 10 <span class="k">OFFSET</span> 20;</pre></div>
+
+<h3>WHERE Clause Operators</h3>
+<table class="doc-table">
+  <thead><tr><th>Operator</th><th>Example</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>=</code></td><td><code>age = 25</code></td><td>Exact match</td></tr>
+    <tr><td><code>!=</code> / <code>&lt;&gt;</code></td><td><code>status != 'deleted'</code></td><td>Not equal</td></tr>
+    <tr><td><code>BETWEEN</code></td><td><code>price BETWEEN 10 AND 50</code></td><td>Range inclusive</td></tr>
+    <tr><td><code>IN</code></td><td><code>role IN ('admin','mod')</code></td><td>Value in list</td></tr>
+    <tr><td><code>NOT IN</code></td><td><code>status NOT IN ('banned')</code></td><td>Value not in list</td></tr>
+    <tr><td><code>LIKE</code></td><td><code>name LIKE 'Ali%'</code></td><td>Pattern match (slow on large tables)</td></tr>
+    <tr><td><code>IS NULL</code></td><td><code>deleted_at IS NULL</code></td><td>Check for null</td></tr>
+    <tr><td><code>IS NOT NULL</code></td><td><code>email IS NOT NULL</code></td><td>Must have value</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">dml_commands.sql</div>
+<pre><span class="k">INSERT INTO</span> users (name, email) <span class="k">VALUES</span> ('Ali', 'ali@test.com');
+<span class="k">INSERT INTO</span> users (name, email) <span class="k">VALUES</span>
+  ('Sara', 'sara@test.com'),
+  ('John', 'john@test.com');
+
+<span class="k">UPDATE</span> users <span class="k">SET</span> role = 'admin' <span class="k">WHERE</span> id = 1;
+
+<span class="k">DELETE FROM</span> users <span class="k">WHERE</span> last_login < '2023-01-01';
+
+<span class="k">SELECT</span> * <span class="k">FROM</span> users <span class="k">WHERE</span> id <span class="k">IN</span> (1, 5, 9);</pre></div>
+</section>
+
+<section id="query-joins" class="doc-section">
+<h2>Joins Lab — All Join Types</h2>
+<p>Joins combine rows from two or more tables based on a related column.</p>
+
+<table class="doc-table">
+  <thead><tr><th>Join Type</th><th>Returns</th><th>Common Use</th></tr></thead>
+  <tbody>
+    <tr><td><code>INNER JOIN</code></td><td>Rows matching in BOTH tables</td><td>Users with orders</td></tr>
+    <tr><td><code>LEFT JOIN</code></td><td>ALL left rows + matching right</td><td>All users, orders if any</td></tr>
+    <tr><td><code>RIGHT JOIN</code></td><td>ALL right rows + matching left</td><td>All orders, user if exists</td></tr>
+    <tr><td><code>CROSS JOIN</code></td><td>Every combination (cartesian)</td><td>Generating combinations</td></tr>
+    <tr><td><code>SELF JOIN</code></td><td>Table joined to itself</td><td>Employee → Manager hierarchy</td></tr>
+  </tbody>
+</table>
+
+<div class="code-editor"><div class="editor-header">all_joins.sql</div>
+<pre><span class="k">-- INNER JOIN: only users who placed orders</span>
+<span class="k">SELECT</span> u.name, o.total
+<span class="k">FROM</span> users u
+<span class="k">INNER JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id;
+
+<span class="k">-- LEFT JOIN: all users, NULL if no orders</span>
+<span class="k">SELECT</span> u.name, o.total
+<span class="k">FROM</span> users u
+<span class="k">LEFT JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id;
+
+<span class="k">-- Find users with NO orders</span>
+<span class="k">SELECT</span> u.name
+<span class="k">FROM</span> users u
+<span class="k">LEFT JOIN</span> orders o <span class="k">ON</span> u.id = o.user_id
+<span class="k">WHERE</span> o.id <span class="k">IS NULL</span>;
+
+<span class="k">-- SELF JOIN: find employee + manager name</span>
+<span class="k">SELECT</span> e.name <span class="k">AS</span> Employee, m.name <span class="k">AS</span> Manager
+<span class="k">FROM</span> employees e
+<span class="k">LEFT JOIN</span> employees m <span class="k">ON</span> e.manager_id = m.id;</pre></div>
+</section>
+
+<section id="query-agg" class="doc-section">
+<h2>Aggregation &amp; GROUP BY</h2>
+
+<div class="code-editor"><div class="editor-header">aggregation.sql</div>
+<pre><span class="k">SELECT</span>
+  dept,
+  <span class="k">COUNT</span>(*) <span class="k">AS</span> total_employees,
+  <span class="k">AVG</span>(salary) <span class="k">AS</span> avg_salary,
+  <span class="k">MAX</span>(salary) <span class="k">AS</span> top_salary,
+  <span class="k">MIN</span>(salary) <span class="k">AS</span> lowest_salary,
+  <span class="k">SUM</span>(salary) <span class="k">AS</span> payroll
+<span class="k">FROM</span> employees
+<span class="k">WHERE</span> active = 1
+<span class="k">GROUP BY</span> dept
+<span class="k">HAVING</span> <span class="k">AVG</span>(salary) > 50000
+<span class="k">ORDER BY</span> payroll <span class="k">DESC</span>;</pre></div>
+
+<h3>Aggregate Functions</h3>
+<table class="doc-table">
+  <thead><tr><th>Function</th><th>Returns</th><th>Ignores NULL?</th></tr></thead>
+  <tbody>
+    <tr><td><code>COUNT(*)</code></td><td>Total rows</td><td>❌ Counts NULLs</td></tr>
+    <tr><td><code>COUNT(col)</code></td><td>Non-null count</td><td>✅ Skips NULLs</td></tr>
+    <tr><td><code>SUM(col)</code></td><td>Total value</td><td>✅</td></tr>
+    <tr><td><code>AVG(col)</code></td><td>Average value</td><td>✅</td></tr>
+    <tr><td><code>MAX(col)</code></td><td>Largest value</td><td>✅</td></tr>
+    <tr><td><code>MIN(col)</code></td><td>Smallest value</td><td>✅</td></tr>
+    <tr><td><code>GROUP_CONCAT(col)</code></td><td>Comma-joined string</td><td>✅</td></tr>
+  </tbody>
+</table>
+
+<div class="lab-box">
+  <span class="lab-tag success">WHERE vs HAVING</span>
+  <p><code>WHERE</code> filters <strong>rows before grouping</strong>. <code>HAVING</code> filters <strong>groups after aggregation</strong>.</p>
+</div>
+</section>
+
+<section id="query-sub" class="doc-section">
+<h2>Subqueries &amp; CTEs</h2>
+
+<div class="code-editor"><div class="editor-header">subqueries.sql</div>
+<pre><span class="k">-- Scalar subquery</span>
+<span class="k">SELECT</span> name, salary,
+  salary - (<span class="k">SELECT AVG</span>(salary) <span class="k">FROM</span> employees) <span class="k">AS</span> diff_from_avg
+<span class="k">FROM</span> employees;
+
+<span class="k">-- IN subquery: users who placed orders</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> users
+<span class="k">WHERE</span> id <span class="k">IN</span> (<span class="k">SELECT DISTINCT</span> user_id <span class="k">FROM</span> orders);
+
+<span class="k">-- Correlated subquery: orders above user avg</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> orders o
+<span class="k">WHERE</span> total > (
+  <span class="k">SELECT AVG</span>(total) <span class="k">FROM</span> orders
+  <span class="k">WHERE</span> user_id = o.user_id
+);
+
+<span class="k">-- CTE (Common Table Expression)</span>
+<span class="k">WITH</span> high_earners <span class="k">AS</span> (
+  <span class="k">SELECT</span> * <span class="k">FROM</span> employees <span class="k">WHERE</span> salary > 80000
+)
+<span class="k">SELECT</span> dept, <span class="k">COUNT</span>(*) <span class="k">FROM</span> high_earners <span class="k">GROUP BY</span> dept;</pre></div>
+</section>

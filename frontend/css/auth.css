@@ -1,0 +1,236 @@
+:root {
+    --auth-bg: #f3f4f6;
+    --auth-card-bg: #ffffff;
+    --auth-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-page {
+    background: var(--light);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+    padding: 0;
+}
+
+.auth-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.auth-visual {
+    flex: 1.2;
+    background: linear-gradient(rgba(0, 117, 143, 0.8), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&q=80&w=2000');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem;
+    color: white;
+    position: relative;
+}
+
+.auth-visual-content {
+    max-width: 500px;
+    z-index: 2;
+    animation: fadeIn 0.8s var(--ease) forwards;
+}
+
+.auth-visual h2 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+}
+
+.auth-visual p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.auth-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.auth-feature {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.af-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.auth-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    background: white;
+    overflow-y: auto;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 0;
+    box-shadow: none;
+    background: transparent;
+    animation: fadeIn 0.6s var(--ease) 0.2s forwards;
+    opacity: 0;
+}
+
+.auth-header {
+    text-align: left;
+    margin-bottom: 2.5rem;
+}
+
+.auth-header .logo {
+    margin-bottom: 2rem;
+    display: inline-block;
+}
+
+.auth-header h1 {
+    font-size: 2.2rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: var(--gray);
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .auth-visual {
+        display: none;
+    }
+    .auth-content {
+        padding: 2rem;
+    }
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.form-group label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.form-control {
+    padding: 0.9rem 1.1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: #fdfdfd;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--mysql-blue);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0, 117, 143, 0.1);
+}
+
+.auth-btn {
+    background: var(--mysql-blue);
+    color: white;
+    border: none;
+    padding: 1.1rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 117, 143, 0.2);
+}
+
+.auth-btn:hover {
+    background: #005f74;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 117, 143, 0.3);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: var(--gray);
+}
+
+.auth-footer a {
+    color: var(--mysql-blue);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.social-auth {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.85rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.social-btn:hover {
+    background: var(--bg-alt);
+    border-color: #d1d5db;
+}
+
+.social-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

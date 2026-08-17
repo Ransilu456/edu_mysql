@@ -1,0 +1,204 @@
+<section id="norm-concept" class="doc-section">
+<div class="section-badge">Normalization</div>
+<h2>Anomalies Lab</h2>
+<p class="section-intro">Before applying normal forms, you must learn to identify the three types of anomalies that bad schema design creates.</p>
+
+<div class="anomaly-grid">
+  <div class="lab-box">
+    <span class="lab-tag error">Insertion Anomaly</span>
+    <p>You cannot add a Course record without a Student being enrolled, because the Primary Key requires StudentID.</p>
+    <table class="doc-table">
+      <thead><tr><th>StudentID</th><th>Name</th><th>Course</th><th>Instructor</th></tr></thead>
+      <tbody>
+        <tr><td>101</td><td>Ali</td><td>SQL</td><td>Dr. Kim</td></tr>
+        <tr><td style="color:#dc2626">???</td><td style="color:#dc2626">???</td><td>Python</td><td>Dr. Lee</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="lab-box">
+    <span class="lab-tag error">Update Anomaly</span>
+    <p>Dr. Kim's name is stored in 1000 rows. One missed update creates inconsistent data.</p>
+    <table class="doc-table">
+      <thead><tr><th>SID</th><th>Course</th><th>Instructor</th></tr></thead>
+      <tbody>
+        <tr><td>101</td><td>SQL</td><td>Dr. Kim</td></tr>
+        <tr><td>102</td><td>SQL</td><td style="color:#dc2626">Dr. KIM</td></tr>
+        <tr><td>103</td><td>SQL</td><td>Dr. Kim</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="lab-box anomaly-full">
+    <span class="lab-tag error">Deletion Anomaly</span>
+    <p>Deleting the only student enrolled in &quot;Python&quot; destroys all knowledge that the Python course exists.</p>
+  </div>
+</div>
+</section>
+
+<section id="norm-1nf" class="doc-section">
+<div class="section-badge">Normalization</div>
+<h2>1st Normal Form (1NF)</h2>
+<p class="section-intro"><strong>Rule:</strong> Every column must hold exactly ONE atomic value. No comma-separated lists, no arrays, no repeating groups.</p>
+
+<div class="practical-split">
+  <div class="lab-box">
+    <span class="lab-tag error">BEFORE &mdash; Violates 1NF</span>
+    <table class="doc-table">
+      <thead><tr><th>ID</th><th>Name</th><th>Phones</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Sara</td><td style="color:#dc2626">555-1234, 555-5678</td></tr>
+        <tr><td>2</td><td>John</td><td>555-9999</td></tr>
+      </tbody>
+    </table>
+    <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">Two phones in one cell &mdash; cannot index or query individually.</p>
+  </div>
+  <div class="lab-box">
+    <span class="lab-tag success">AFTER &mdash; 1NF Compliant</span>
+    <table class="doc-table">
+      <thead><tr><th>ID</th><th>Name</th><th>Phone</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Sara</td><td style="color:#16a34a">555-1234</td></tr>
+        <tr><td>1</td><td>Sara</td><td style="color:#16a34a">555-5678</td></tr>
+        <tr><td>2</td><td>John</td><td style="color:#16a34a">555-9999</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="code-editor"><div class="editor-header">1nf_schema.sql</div>
+<pre><span class="k">CREATE TABLE</span> user_phones (
+  user_id  <span class="k">INT NOT NULL</span>,
+  phone    <span class="k">VARCHAR</span>(20) <span class="k">NOT NULL</span>,
+  <span class="k">PRIMARY KEY</span> (user_id, phone),
+  <span class="k">FOREIGN KEY</span> (user_id) <span class="k">REFERENCES</span> users(id)
+);</pre></div>
+</section>
+
+<section id="norm-2nf" class="doc-section">
+<div class="section-badge">Normalization</div>
+<h2>2nd Normal Form (2NF)</h2>
+<p class="section-intro"><strong>Rule:</strong> Must be in 1NF. Every non-key column must depend on the <em>entire</em> composite primary key &mdash; not just part of it.</p>
+
+<div class="lab-box">
+  <span class="lab-tag error">BEFORE &mdash; Partial Dependency</span>
+  <p style="margin-bottom:1rem">PK = {StudentID + CourseID}</p>
+  <table class="doc-table">
+    <thead><tr><th>StudentID</th><th>CourseID</th><th>StudentName</th><th>CourseName</th><th>Grade</th></tr></thead>
+    <tbody>
+      <tr><td>101</td><td>C1</td><td>Ali</td><td>SQL Basics</td><td>A</td></tr>
+      <tr><td>101</td><td>C2</td><td>Ali</td><td>Python</td><td>B</td></tr>
+    </tbody>
+  </table>
+  <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">StudentName depends only on StudentID (partial). CourseName depends only on CourseID (partial).</p>
+</div>
+
+<div class="lab-box">
+  <span class="lab-tag success">AFTER &mdash; 2NF: Split into 3 Tables</span>
+  <div class="three-table-grid">
+    <div>
+      <p class="table-label-text">Students</p>
+      <table class="doc-table">
+        <thead><tr><th>StudentID PK</th><th>StudentName</th></tr></thead>
+        <tbody><tr><td>101</td><td>Ali</td></tr></tbody>
+      </table>
+    </div>
+    <div>
+      <p class="table-label-text">Courses</p>
+      <table class="doc-table">
+        <thead><tr><th>CourseID PK</th><th>CourseName</th></tr></thead>
+        <tbody>
+          <tr><td>C1</td><td>SQL Basics</td></tr>
+          <tr><td>C2</td><td>Python</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <p class="table-label-text">Enrollments (junction)</p>
+      <table class="doc-table">
+        <thead><tr><th>StudentID FK</th><th>CourseID FK</th><th>Grade</th></tr></thead>
+        <tbody>
+          <tr><td>101</td><td>C1</td><td>A</td></tr>
+          <tr><td>101</td><td>C2</td><td>B</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="norm-3nf" class="doc-section">
+<div class="section-badge">Normalization</div>
+<h2>3rd Normal Form (3NF)</h2>
+<p class="section-intro"><strong>Rule:</strong> Must be in 2NF. No transitive dependencies &mdash; non-key columns must not depend on other non-key columns.</p>
+
+<div class="practical-split">
+  <div class="lab-box">
+    <span class="lab-tag error">BEFORE &mdash; Transitive Dependency</span>
+    <table class="doc-table">
+      <thead><tr><th>EmpID PK</th><th>Name</th><th>DeptID</th><th>DeptName</th><th>Location</th></tr></thead>
+      <tbody>
+        <tr><td>E1</td><td>Ali</td><td>D1</td><td>Engineering</td><td>Floor 3</td></tr>
+        <tr><td>E2</td><td>Sara</td><td>D1</td><td>Engineering</td><td>Floor 3</td></tr>
+      </tbody>
+    </table>
+    <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">EmpID &rarr; DeptID &rarr; DeptName, Location (transitive chain)</p>
+  </div>
+  <div class="lab-box">
+    <span class="lab-tag success">AFTER &mdash; 3NF: Remove Transitive Chain</span>
+    <p class="table-label-text">Employees</p>
+    <table class="doc-table">
+      <thead><tr><th>EmpID</th><th>Name</th><th>DeptID FK</th></tr></thead>
+      <tbody><tr><td>E1</td><td>Ali</td><td>D1</td></tr></tbody>
+    </table>
+    <p class="table-label-text" style="margin-top:1.25rem">Departments</p>
+    <table class="doc-table">
+      <thead><tr><th>DeptID</th><th>DeptName</th><th>Location</th></tr></thead>
+      <tbody><tr><td>D1</td><td>Engineering</td><td>Floor 3</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="info-box">
+  <strong>Bill Kent's Rule:</strong> &ldquo;Every non-key attribute must provide a fact about the key, the whole key, and nothing but the key &mdash; so help me Codd.&rdquo;
+</div>
+</section>
+
+<section id="norm-bcnf" class="doc-section">
+<div class="section-badge">Normalization</div>
+<h2>BCNF &mdash; Boyce-Codd Normal Form</h2>
+<p class="section-intro"><strong>Rule:</strong> For every functional dependency X &rarr; Y, X must be a superkey. This is a stricter version of 3NF for tables with overlapping candidate keys.</p>
+
+<div class="practical-split">
+  <div class="lab-box">
+    <span class="lab-tag error">3NF but NOT BCNF</span>
+    <p style="margin-bottom:1rem;font-size:0.88rem">A teacher only teaches one subject (Teacher &rarr; Subject), but Teacher is not a superkey.</p>
+    <table class="doc-table">
+      <thead><tr><th>Student</th><th>Subject</th><th>Teacher</th></tr></thead>
+      <tbody>
+        <tr><td>Ali</td><td>Math</td><td>Dr. Smith</td></tr>
+        <tr><td>Sara</td><td>Math</td><td>Dr. Smith</td></tr>
+        <tr><td>Ali</td><td>Physics</td><td>Dr. Jones</td></tr>
+      </tbody>
+    </table>
+    <p style="color:#dc2626;margin-top:0.75rem;font-size:0.85rem">Dr. Smith's subject is stored for every student &mdash; update anomaly risk.</p>
+  </div>
+  <div class="lab-box">
+    <span class="lab-tag success">BCNF Solution</span>
+    <p class="table-label-text">TeacherSubject</p>
+    <table class="doc-table">
+      <thead><tr><th>Teacher PK</th><th>Subject</th></tr></thead>
+      <tbody>
+        <tr><td>Dr. Smith</td><td>Math</td></tr>
+        <tr><td>Dr. Jones</td><td>Physics</td></tr>
+      </tbody>
+    </table>
+    <p class="table-label-text" style="margin-top:1.25rem">Enrollment</p>
+    <table class="doc-table">
+      <thead><tr><th>Student</th><th>Teacher FK</th></tr></thead>
+      <tbody>
+        <tr><td>Ali</td><td>Dr. Smith</td></tr>
+        <tr><td>Sara</td><td>Dr. Smith</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
